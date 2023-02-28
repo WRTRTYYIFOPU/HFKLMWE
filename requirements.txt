@@ -23,4 +23,4 @@ spotipy
 tgcrypto
 youtube-search
 youtube-search-python
-git+https://github.com/blackjack4494/yt-dlc
+git+https://github.com/yt-dlp/yt-dlp
