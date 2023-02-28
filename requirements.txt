@@ -23,4 +23,4 @@ spotipy
 tgcrypto
 youtube-search
 youtube-search-python
-git+https://github.com/sagniKdas53/yt-diff
+git+https://github.com/blackjack4494/yt-dlc
