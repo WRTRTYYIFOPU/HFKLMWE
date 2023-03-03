@@ -98,7 +98,6 @@ PLAY_COMMAND = get_command("PLAY_COMMAND")
 
 @PlayWrapper
 
-async def play_commnd(
 
     client,
 
