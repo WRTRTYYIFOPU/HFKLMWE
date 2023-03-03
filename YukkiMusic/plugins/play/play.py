@@ -10,7 +10,7 @@
 import random
 import string
 from ast import ExceptHandler
-from strings.filters import command
+
 from pyrogram import filters
 from pyrogram.types import (InlineKeyboardMarkup, InputMediaPhoto,
                             Message)
@@ -19,6 +19,7 @@ from pytgcalls.exceptions import NoActiveGroupCall
 import config
 from config import BANNED_USERS, lyrical
 from strings import get_command
+from strings.filters import command
 from YukkiMusic import (Apple, Resso, SoundCloud, Spotify, Telegram,
                         YouTube, app)
 from YukkiMusic.core.call import Yukki
@@ -39,7 +40,9 @@ from YukkiMusic.utils.stream.stream import stream
 PLAY_COMMAND = get_command("PLAY_COMMAND")
 
 
-@app.on_message(command(PLAY_COMMAND)
+@app.on_message(
+    command(PLAY_COMMAND)
+    & filters.group
     & ~filters.edited
     & ~BANNED_USERS
 )
@@ -62,12 +65,8 @@ async def play_commnd(
     slider = None
     plist_type = None
     spotify = None
-    if message.chat.type == "channel":
-       user_id = None
-       user_name = None
-    else:
-         user_id = message.from_user.id
-         user_name = message.from_user.first_name
+    user_id = message.from_user.id
+    user_name = message.from_user.first_name
     audio_telegram = (
         (
             message.reply_to_message.audio
@@ -587,6 +586,17 @@ async def play_music(client, CallbackQuery, _):
     return await mystic.delete()
 
 
+@app.on_callback_query(
+    filters.regex("AnonymousAdmin") & ~BANNED_USERS
+)
+async def anonymous_check(client, CallbackQuery):
+    try:
+        await CallbackQuery.answer(
+            "You're an Anonymous Admin\n\nGo to your group's setting \n-> Administrators List \n-> Click on your name \n-> uncheck REMAIN ANONYMOUS button there.",
+            show_alert=True,
+        )
+    except:
+        return
 
 
 @app.on_callback_query(
