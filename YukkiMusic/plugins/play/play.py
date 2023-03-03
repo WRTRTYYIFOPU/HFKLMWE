@@ -6,21 +6,19 @@
 # Please see < https://github.com/TeamYukki/YukkiMusicBot/blob/master/LICENSE >
 #
 # All rights reserved.
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
 import random
 import string
 from ast import ExceptHandler
-
+from strings.filters import command
 from pyrogram import filters
 from pyrogram.types import (InlineKeyboardMarkup, InputMediaPhoto,
                             Message)
 from pytgcalls.exceptions import NoActiveGroupCall
 
 import config
-from config import (BANNED_USERS, lyrical, YAFA_NAME,
-                    YAFA_CHANNEL, CHANNEL_SUDO)
+from config import BANNED_USERS, lyrical
 from strings import get_command
-from strings.filters import command
 from YukkiMusic import (Apple, Resso, SoundCloud, Spotify, Telegram,
                         YouTube, app)
 from YukkiMusic.core.call import Yukki
@@ -37,41 +35,11 @@ from YukkiMusic.utils.inline.playlist import botplaylist_markup
 from YukkiMusic.utils.logger import play_logs
 from YukkiMusic.utils.stream.stream import stream
 
-
-force_btn = InlineKeyboardMarkup(
-    [
-        [
-            InlineKeyboardButton(   
-              text=f"{YAFA_NAME}", url=f"{YAFA_CHANNEL}",)
-        ],
-        [
-            InlineKeyboardButton(
-              text="• تحديثات السورس •", url="https://t.me/FH_KP",),                        
-        ],        
-    ]
-)
-async def check_is_joined(message):    
-    try:
-        userid = message.from_user.id
-        status = await app.get_chat_member(f"{CHANNEL_SUDO}", userid)
-        return True
-    except Exception:
-        await message.reply_text("**⚠️︙عذراً، عليك الانضمام الى القناة أولاً :**",reply_markup=force_btn,parse_mode="markdown",disable_web_page_preview=False)
-        return False
-      
 # Command
 PLAY_COMMAND = get_command("PLAY_COMMAND")
 
 
-@app.on_message(
-    command(["شغل","تشغيل"])
-    & filters.group
-    & ~filters.edited
-    & ~BANNED_USERS
-)
-@app.on_message(
-    filters.command(PLAY_COMMAND)
-    & filters.group
+@app.on_message(command(PLAY_COMMAND)
     & ~filters.edited
     & ~BANNED_USERS
 )
@@ -87,8 +55,6 @@ async def play_commnd(
     url,
     fplay,
 ):
-    if not await check_is_joined(message):
-        return
     mystic = await message.reply_text(
         _["play_2"].format(channel) if channel else _["play_1"]
     )
@@ -96,8 +62,12 @@ async def play_commnd(
     slider = None
     plist_type = None
     spotify = None
-    user_id = message.from_user.id
-    user_name = message.from_user.first_name
+    if message.chat.type == "channel":
+       user_id = None
+       user_name = None
+    else:
+         user_id = message.from_user.id
+         user_name = message.from_user.first_name
     audio_telegram = (
         (
             message.reply_to_message.audio
@@ -617,17 +587,6 @@ async def play_music(client, CallbackQuery, _):
     return await mystic.delete()
 
 
-@app.on_callback_query(
-    filters.regex("AnonymousAdmin") & ~BANNED_USERS
-)
-async def anonymous_check(client, CallbackQuery):
-    try:
-        await CallbackQuery.answer(
-            "You're an Anonymous Admin\n\nGo to your group's setting \n-> Administrators List \n-> Click on your name \n-> uncheck REMAIN ANONYMOUS button there.",
-            show_alert=True,
-        )
-    except:
-        return
 
 
 @app.on_callback_query(
