@@ -91,12 +91,10 @@ PLAY_COMMAND = get_command("PLAY_COMMAND")
 
     filters.command(PLAY_COMMAND)
     & ~filters.edited
-    & ~BANNED_USERS
 
 )
 @app.on_message(filters.command(["شغل","تشغيل","قناه"],"")
 & ~filters.edited
-& ~BANNED_USERS)
 
 @PlayWrapper
 
